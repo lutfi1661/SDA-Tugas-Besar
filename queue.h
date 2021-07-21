@@ -7,14 +7,15 @@
 
 #define Info(P) (P)->info
 #define Next(P) (P)->next
-#define InfoFront(Q) (Q).Front->info 
-#define InfoRear(Q) (Q).Rear->info 
-#define Front(Q) (Q).Front 
-#define Rear(Q) (Q).Rear 
+#define InfoFront(Q) (Q).Front->info
+#define InfoRear(Q) (Q).Rear->info
+#define Front(Q) (Q).Front
+#define Rear(Q) (Q).Rear
 
 typedef struct NodeQueue *addrNQ;
 
-typedef struct{
+typedef struct
+{
 	char Name[20];
 	int ArrivalTime;
 	List DiseaseList;
@@ -22,16 +23,18 @@ typedef struct{
 	int InspectionTime;
 	int FinishingTime;
 	int Priority;
-}InfoQueue;
+} InfoQueue;
 typedef InfoQueue infotype;
 
-typedef struct NodeQueue {
+typedef struct NodeQueue
+{
 	infotype info; // info pelanggan
 	addrNQ next;
 } NodeQueue;
-typedef struct{
+typedef struct
+{
 	addrNQ Front; // tag antrian depan
-	addrNQ Rear; // tag antrian belakang
+	addrNQ Rear;  // tag antrian belakang
 } Queue;
 
 /***** Manajemen memori *****/
@@ -84,6 +87,10 @@ void PrintDisease();
 char *CategoryCheck(int Disease);
 
 int InspectionTimeCheck(int Disease);
+
+int PriorityCount(int Ringan, int Sedang, int Berat);
+
+int InspectionTimeCount(int Ringan, int Sedang, int Berat);
 
 void Registration(Queue *Q);
 
