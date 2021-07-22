@@ -1,3 +1,9 @@
+/*
+	Modified		: Algi Fari Ramdhani & Mochammad Lutfi Faturachman
+	Date Modified 		: 19 Juli 2021
+	Version			: 1.0
+*/
+
 #include "queue.h"
 #include <stdio.h>
 #include <stdlib.h>
