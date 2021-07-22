@@ -1,3 +1,9 @@
+/*
+	Modified		: Algi Fari Ramdhani & Mochammad Lutfi Faturachman
+	Date Modified 		: 19 Juli 2021
+	Version			: 1.0
+*/
+
 #ifndef QUEUE_H
 #define QUEUE_H
 
@@ -15,7 +21,7 @@
 typedef struct NodeQueue *addrNQ;
 
 typedef struct{
-	char Name[20];
+	char Name[16];
 	int ArrivalTime;
 	List DiseaseList;
 	int StartingTime;
