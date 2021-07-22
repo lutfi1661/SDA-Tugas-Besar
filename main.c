@@ -6,9 +6,9 @@
 int main(){
 	Queue Q;
 	CreateQueue(&Q);
-	
+
 	int option;
-	
+
 	do{
 		system("cls");
 		printf("<<| KAL-EL 6 |>>\n");
@@ -16,23 +16,23 @@ int main(){
 		puts("[1] Registrasi");
 		puts("[2] Panggil Antrian");
 		puts("[3] Keluar");
-		
-		printf("Pilihan : "); scanf("%d", &option);
-		
-		if(option == 1){
+
+		printf("Pilihan : ");
+		scanf("%d", &option);
+
+		if (option == 1){
 			Registration(&Q);
 			PrintQueue(Q);
 			getch();
-		}else if(option == 2){
-//			PrintQueue(Q);
-			puts("sfdsdf");
-		}else if(option == 3){
+		}
+		else if (option == 2){
+			
+		}else if (option == 3){
 			exit(0);
 		}else{
 			printf("Maaf, masukan Anda salah. Silahkan coba lagi.");
 		}
-		
-	}while(option != 3);
-	
+	}while (option != 3);
+
 	return 0;
 }

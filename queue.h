@@ -14,8 +14,7 @@
 
 typedef struct NodeQueue *addrNQ;
 
-typedef struct
-{
+typedef struct{
 	char Name[20];
 	int ArrivalTime;
 	List DiseaseList;
@@ -26,15 +25,13 @@ typedef struct
 } InfoQueue;
 typedef InfoQueue infotype;
 
-typedef struct NodeQueue
-{
-	infotype info; // info pelanggan
+typedef struct NodeQueue{
+	infotype info;
 	addrNQ next;
 } NodeQueue;
-typedef struct
-{
-	addrNQ Front; // tag antrian depan
-	addrNQ Rear;  // tag antrian belakang
+typedef struct{
+	addrNQ Front;
+	addrNQ Rear;
 } Queue;
 
 /***** Manajemen memori *****/
