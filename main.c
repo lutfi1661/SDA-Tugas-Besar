@@ -11,28 +11,33 @@ int main(){
 
 	do{
 		system("cls");
-		printf("<<| KAL-EL 6 |>>\n");
+		puts("=== SELAMAT DATANG DI KAEL-6 CARE ===");
 		puts("MENU UTAMA");
 		puts("[1] Registrasi");
 		puts("[2] Panggil Antrian");
-		puts("[3] Keluar");
+		puts("[3] Daftar Antrian");
+		puts("[4] Keluar");
 
-		printf("Pilihan : ");
+		printf("Pilih : ");
 		scanf("%d", &option);
 
 		if (option == 1){
 			Registration(&Q);
 			PrintQueue(Q);
-			getch();
+			system("pause");
 		}
 		else if (option == 2){
 			
 		}else if (option == 3){
+			PrintQueue(Q);
+			system("pause");
+		}else if (option == 4){
+			puts("Terima kasih telah menggunakan Aplikasi Layanan Dokter Hewan");
 			exit(0);
 		}else{
 			printf("Maaf, masukan Anda salah. Silahkan coba lagi.");
 		}
-	}while (option != 3);
+	}while (option != 4);
 
 	return 0;
 }

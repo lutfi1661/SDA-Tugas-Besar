@@ -1,9 +1,3 @@
-/*
-	Modified		: Algi Fari Ramdhani & Mochammad Lutfi Faturachman
-	Date Modified 		: 19 Juli 2021
-	Version			: 1.0
-*/
-
 #include "queue.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +13,7 @@ alokasi.
 * Jika alokasi gagal, modul mengembalikan NULL.
 */
 
-char ArrDisease[9][50] = {
+char *ArrDisease[9] = {
 	"Bersin",
 	"Luka Ringan",
 	"Penyakit Kulit",
@@ -33,6 +27,7 @@ char ArrDisease[9][50] = {
 
 addrNQ Allocation(infotype X){
 	addrNQ P;
+	
 	P = (addrNQ)malloc(sizeof(NodeQueue));
 	
 	if (P != Nil){
@@ -84,7 +79,6 @@ yang lama mengaitkan pointernya ke node yang baru */
 
 void enQueue(Queue *Q, infotype data){
 	addrNQ P;
-
 	P = Allocation(data);
 
 	if (P != Nil){
@@ -92,8 +86,58 @@ void enQueue(Queue *Q, infotype data){
 			Front(*Q) = P;
 			Rear(*Q) = P;
 		}else{
-			Next(Rear(*Q)) = P;
-			Rear(*Q) = P;
+			if (Front(*Q)==Rear(*Q)){
+				if (P->info.Priority > (*Q).Front->info.Priority){
+					Front(*Q)=P;
+					P->next=Rear(*Q);
+				}else{
+					(*Q).Rear = P;
+					(*Q).Front->next=P;
+				}
+				
+			}else {
+				if (P->info.Priority > (*Q).Front->info.Priority){
+					P->next = (*Q).Front;
+					(*Q).Front = P;
+				}
+				else if (P->info.Priority <= (*Q).Rear->info.Priority){
+					(*Q).Rear->next = P;
+					P = (*Q).Rear;
+				}
+				else {
+					addrNQ before;
+					addrNQ after;
+					addrNQ travel;
+					travel = (*Q).Front;
+					while (travel->info.Priority >= P->info.Priority){
+						before = travel;
+						travel = travel->next;
+					}
+				
+					if (travel->next!=NULL){
+						after = travel->next;
+						if (travel->info.Priority < P->info.Priority){
+							before->next=P;
+							P->next=travel;
+						}
+						else {
+							while (travel->info.Priority <= after->info.Priority){
+								if (travel->info.Priority > after->info.Priority){
+									P->next=after;
+									travel->next = P;
+								}
+								travel = after;
+								after = after->next;
+							}
+						}
+						
+					}
+					else if (travel->next==NULL){
+						before->next = P;
+						P->next = travel;
+					}
+				}
+			}
 		}
 	}
 }
@@ -182,6 +226,47 @@ int InspectionTimeCount(int Ringan, int Sedang, int Berat){
 	return (Ringan * 15) + (Sedang * 30) + (Berat * 45);
 }
 
+void setTime(Queue *Q, infotype *X){
+	addrNQ P, R;
+	
+	P = Front(*Q);
+	
+	if(IsQueueEmpty(*Q)){
+		X->StartingTime = X->ArrivalTime;
+		X->FinishingTime = X->ArrivalTime + X->InspectionTime;
+	}else{
+		if(X->Priority > Info(P).Priority){
+			X->StartingTime = Info(P).StartingTime;
+			X->FinishingTime = X->StartingTime + X->InspectionTime;
+			Info(P).StartingTime = X->FinishingTime;
+			Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
+			while(Next(P) != Nil){
+				Next(P)->info.StartingTime = Info(P).FinishingTime;
+				Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
+				P = Next(P);
+			}
+		}else if(X->Priority <= Info(P).Priority){
+			while(P != Nil){
+				if(X->Priority <= Info(P).Priority){
+					R = P;
+					P = Next(P);
+				}else{
+					X->StartingTime = Info(P).StartingTime;
+					X->FinishingTime = X->StartingTime + X->InspectionTime;
+					Info(P).StartingTime = X->FinishingTime;
+					Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
+					while(Next(P) != Nil){
+						Next(P)->info.StartingTime = Info(P).FinishingTime;
+						Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
+						P = Next(P);
+					}
+					break;
+				}
+			}	
+		}
+	}
+}
+
 void Registration(Queue *Q){
 	system("cls");
 	infotype X;
@@ -192,7 +277,7 @@ void Registration(Queue *Q){
 
 	int i, SymptomTotal;
 
-	printf("=== TAMBAH ANTRIAN ===\n");
+	printf("========== REGISTRASI ==========\n");
 	printf("Waktu Kedatangan		: ");
 	scanf("%d", &X.ArrivalTime);
 	fflush(stdin);
@@ -200,16 +285,14 @@ void Registration(Queue *Q){
 	scanf("%s", &X.Name);
 	fflush(stdin);
 
-	puts("Daftar Penyakit,");
+	puts("Daftar Penyakit");
 	PrintDisease();
-	printf("Jumlah Penyakit yang Dialami	: ");
+	printf("Jumlah Penyakit yang Diderita	: ");
 	scanf("%d", &SymptomTotal);
-	puts("Penyakit yang Diderita	: ");
-
+	puts("Penyakit yang Diderita		: ");
 	for (i = 0; i < SymptomTotal; i++){
 		scanf("%d", &tempDisease[i]);
 	}
-
 	int RCount = 0;
 	int SCount = 0;
 	int BCount = 0;
@@ -229,10 +312,10 @@ void Registration(Queue *Q){
 			BCount++;
 		}
 	}
-
 	X.Priority = PriorityCount(RCount, SCount, BCount);
 	X.InspectionTime = InspectionTimeCount(RCount, SCount, BCount);
-
+	setTime(*(&Q),&X);
+	
 	enQueue(Q, X);
 }
 
@@ -245,26 +328,28 @@ void PrintQueue(Queue Q){
 	P = Front(Q);
 
 	puts("========== DAFTAR ANTRIAN ==========");
-
-	while (P != Nil){
-		printf("No. Urut Antrian	: %d\n", i++);
-		printf("Nama			: %s\n", Info(P).Name);
-		printf("Waktu Kedatangan	: %d\n", Info(P).ArrivalTime);
-		puts("Penyakit yang Dialami	:");
-
-		F = First(P->info.DiseaseList);
-		j = 1;
-		while (F != Nil){
-			printf("%d. %s (%s)\n", j++, ArrDisease[F->info.Disease - 1], F->info.Category);
-			F = Next(F);
-		}
-		printf("Prioritas		: %d\n", Info(P).Priority);
-		printf("Waktu Pemeriksaan	: %d menit\n", Info(P).InspectionTime);
-		printf("Waktu Mulai 		: %d \n", Info(P).StartingTime);
-		printf("Waktu Selesai		: %d \n", Info(P).FinishingTime);
-
+	
+	if(P == Nil){
+		puts("\nSaat ini belum ada antrian yang masuk");
+	}else{
+		printf("Total Antrian		: %d\n", NBElmt(Q));
 		puts("------------------------------------");
-
-		P = Next(P);
+		while (P != Nil){
+			printf("No. Urut Antrian	: %d\n", i++);
+			printf("Nama			: %s\n", Info(P).Name);
+			printf("Waktu Kedatangan	: %d\n", Info(P).ArrivalTime);
+			puts("Penyakit yang Diderita	:");
+	
+			PrintInfo(Info(P).DiseaseList, ArrDisease);
+			
+			printf("Prioritas		: %d\n", Info(P).Priority);
+			printf("Waktu Pemeriksaan	: %d\n", Info(P).InspectionTime);
+			printf("Waktu Mulai 		: %d\n", Info(P).StartingTime);
+			printf("Waktu Selesai		: %d\n", Info(P).FinishingTime);
+	
+			puts("------------------------------------");
+	
+			P = Next(P);
+		}
 	}
 }

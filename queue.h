@@ -1,9 +1,8 @@
 /*
 	Modified		: Algi Fari Ramdhani & Mochammad Lutfi Faturachman
-	Date Modified 		: 19 Juli 2021
+	Date Modified 	: 19 Juli 2021
 	Version			: 1.0
 */
-
 #ifndef QUEUE_H
 #define QUEUE_H
 
@@ -94,6 +93,8 @@ int InspectionTimeCheck(int Disease);
 int PriorityCount(int Ringan, int Sedang, int Berat);
 
 int InspectionTimeCount(int Ringan, int Sedang, int Berat);
+
+void setTime(Queue *Q, infotype *X);
 
 void Registration(Queue *Q);
 
