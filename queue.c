@@ -148,18 +148,16 @@ Queue dengan aturan FIFO */
 /* F.S. info yang diambil = nilai elemen Front pd I.S. */
 /* Front(Q) menunjuk ke next antrian atau diset menjadi NIll, Q
 mungkin kosong */
-void deQueue(Queue *Q, infotype *data){
-	addrNQ P;
-
-	(*data) = Front(*Q)->info;
-	P = Front(*Q);
-	Front(*Q) = Next(Front(*Q));
-
-	if (Front(*Q) == Nil){
-		Rear(*Q) = Nil;
+void deQueue(Queue *Q){
+if(IsQueueEmpty(*Q)==1) printf("\nMaaf Antrian Kosong.\n");
+	else {
+		addrNQ P;
+		P = (*Q).Front;
+		(*Q).Front = (*Q).Front->next;
+		P->next=NULL;
+		Deallocation(&P);
+		printf("Antrian Dipanggil...\n");
 	}
-
-	Deallocation(&P);
 }
 
 /* Mengirimkan banyaknya elemen queue jika Q berisi atrian atau
