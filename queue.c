@@ -149,8 +149,9 @@ Queue dengan aturan FIFO */
 /* Front(Q) menunjuk ke next antrian atau diset menjadi NIll, Q
 mungkin kosong */
 void deQueue(Queue *Q){
-if(IsQueueEmpty(*Q)==1) printf("\nMaaf Antrian Kosong.\n");
-	else {
+	if(IsQueueEmpty(*Q)==1){
+		printf("\nMaaf Antrian Kosong.\n");	
+	}else {
 		addrNQ P;
 		P = (*Q).Front;
 		(*Q).Front = (*Q).Front->next;
