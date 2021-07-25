@@ -178,6 +178,9 @@ int NBElmt(Queue Q){
 	return count;
 }
 
+/*
+  Menampilkan daftar penyakit yang diambil dari variabel global ArrDisease
+*/
 void PrintDisease(){
 	int i;
 	for (i = 0; i < 9; i++){
@@ -185,6 +188,9 @@ void PrintDisease(){
 	}
 }
 
+/*
+  Mengembalikan nilai string apakah Ringan, Sedang atau Berat berdasarkan penyakit yang diderita
+*/
 char *CategoryCheck(int Disease){
 	if (Disease < 4){
 		return "Ringan";
@@ -195,6 +201,9 @@ char *CategoryCheck(int Disease){
 	}
 }
 
+/*
+  Mengembalikan nilai integer berupa waktu pemeriksaan berdasarkan kategori penyakit
+*/
 int InspectionTimeCheck(int Disease){
 	if (Disease < 4){
 		return 15;
@@ -205,6 +214,9 @@ int InspectionTimeCheck(int Disease){
 	}
 }
 
+/*
+  Mengembalikan nilai integer berupa perhitungan nilai prioritas berdasarkan jumlah penyakit dan kategori penyakit
+*/
 int PriorityCount(int Ringan, int Sedang, int Berat){
 	int count = 1;
 	
@@ -221,10 +233,16 @@ int PriorityCount(int Ringan, int Sedang, int Berat){
 	return count;
 }
 
+/*
+  Mengembalikan nilai integer untuk waktu pemeriksaan berdasarkan setiap penyakit yang diderita
+*/
 int InspectionTimeCount(int Ringan, int Sedang, int Berat){
 	return (Ringan * 15) + (Sedang * 30) + (Berat * 45);
 }
 
+/*	
+  Menentukan dan mengubah waktu mulai dan waktu selesai jika terjadi perubahan urutan antrian berdasarkan nilai prioritas
+*/
 void setTime(Queue *Q, infotype *X){
 	addrNQ P, R;
 	
@@ -266,6 +284,9 @@ void setTime(Queue *Q, infotype *X){
 	}
 }
 
+/*
+  Menampilkan menu registrasi dan menerima masukan pengguna yang akan dimasukkan ke dalam Queue
+*/
 void Registration(Queue *Q){
 	system("cls");
 	infotype X;
@@ -318,6 +339,10 @@ void Registration(Queue *Q){
 	enQueue(Q, X);
 }
 
+/*	
+  Menampilkan daftar antrian yang memuat informasi total antrian, no urut antrian, nama, waktu kedatangan, 
+  daftar penyakit, prioritas, waktu pemeriksaan, waktu mulai dan waktu selesai
+*/
 void PrintQueue(Queue Q){
 	addrNQ P;
 	address F;
