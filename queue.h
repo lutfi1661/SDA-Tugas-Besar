@@ -1,7 +1,7 @@
 /*
-	Modified		: Algi Fari Ramdhani, Mochammad Lutfi Faturachman & Kevandra Rivaldy Adrianto Putra
+	Modified		: Algi Fari Ramdhani, Kevandra Rivaldy Adrianto Putra, & Mochammad Lutfi Faturachman
 	Date Modified 	: 19 Juli 2021
-	Version			: 1.0
+	Version			: 5.0
 */
 #ifndef QUEUE_H
 #define QUEUE_H

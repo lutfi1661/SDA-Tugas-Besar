@@ -102,7 +102,7 @@ void enQueue(Queue *Q, infotype data){
 				}
 				else if (P->info.Priority <= (*Q).Rear->info.Priority){
 					(*Q).Rear->next = P;
-					P = (*Q).Rear;
+					(*Q).Rear = P;
 				}
 				else {
 					addrNQ before;
