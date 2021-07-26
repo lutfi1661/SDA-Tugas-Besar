@@ -24,6 +24,7 @@ typedef struct{
 	int ArrivalTime;
 	List DiseaseList;
 	int StartingTime;
+	int WaitingTime;
 	int InspectionTime;
 	int FinishingTime;
 	int Priority;
@@ -108,6 +109,9 @@ int PriorityCount(int Ringan, int Sedang, int Berat);
   Mengembalikan nilai integer untuk waktu pemeriksaan berdasarkan setiap penyakit yang diderita
 */
 int InspectionTimeCount(int Ringan, int Sedang, int Berat);
+
+int WaitingTimeCount(addrNQ P, int ArrivalTime);
+
 
 /*	
   Menentukan dan mengubah waktu mulai dan waktu selesai jika terjadi perubahan urutan antrian berdasarkan nilai prioritas

@@ -287,18 +287,32 @@ int InspectionTimeCount(int Ringan, int Sedang, int Berat){
 	return (Ringan * 15) + (Sedang * 30) + (Berat * 45);
 }
 
+int WaitingTimeCount(addrNQ P, int ArrivalTime){
+	if(P == Nil){
+		return 0;
+	}else{
+		if(ArrivalTime < Info(P).FinishingTime){
+			return Info(P).FinishingTime - ArrivalTime;
+		}else{
+			return 0;
+		}
+	}
+}
+
 /*	
   Menentukan dan mengubah waktu mulai dan waktu selesai jika terjadi perubahan urutan antrian berdasarkan nilai prioritas
 */
 void setTime(Queue *Q, infotype *X){
 	addrNQ P, R;
 	
-	P = Front(*Q);
-	
 	if(IsQueueEmpty(*Q)){
 		X->StartingTime = X->ArrivalTime;
 		X->FinishingTime = X->ArrivalTime + X->InspectionTime;
-	}else{
+	}else if(Front(*Q)==Rear(*Q)){
+		X->StartingTime = Info(Front(*Q)).FinishingTime;
+		X->FinishingTime = X->StartingTime + X->InspectionTime;
+	} else {
+		P = Next(Front(*Q));
 		if(X->Priority > Info(P).Priority){
 			X->StartingTime = Info(P).StartingTime;
 			X->FinishingTime = X->StartingTime + X->InspectionTime;
@@ -310,46 +324,57 @@ void setTime(Queue *Q, infotype *X){
 				P = Next(P);
 			}
 		}else if(X->Priority <= Info(P).Priority){
-			if(Front(*Q)==Rear(*Q)){
-				X->StartingTime = Info(P).FinishingTime;
+			while(P != Nil){
+				if(X->Priority <= Info(P).Priority ){
+					R = P;
+					P = Next(P);
+				} else {
+					break;
+				}
+			}
+			
+			if(P == Nil){
+				if(X->ArrivalTime > Info(R).FinishingTime){
+					X->StartingTime = X->ArrivalTime;
+				} else {
+					X->StartingTime = Info(R).FinishingTime;
+				}
 				X->FinishingTime = X->StartingTime + X->InspectionTime;
 			} else {
-				while(P != Nil){
-					if(X->Priority <= Info(P).Priority ){
-						R = P;
-						P = Next(P);
+				if(X->Priority == Info(R).Priority){
+					if(X->ArrivalTime > Info(R).FinishingTime){
+						X->StartingTime = X->ArrivalTime;
 					} else {
-						break;
-					}
-				}
-				
-				if(P == Nil){
-					X->StartingTime = Info(R).FinishingTime;
-					X->FinishingTime = X->StartingTime + X->InspectionTime;
-				} else {
-					if(X->Priority == Info(R).Priority){
 						X->StartingTime = Info(R).StartingTime;
-						X->FinishingTime = X->StartingTime + X->InspectionTime;
-						Info(P).StartingTime = X->FinishingTime;
-						Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
-						while(Next(P) != Nil){
-							Next(P)->info.StartingTime = Info(P).FinishingTime;
-							Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
-							P = Next(P);
-						}
+					}
+					
+					X->FinishingTime = X->StartingTime + X->InspectionTime;
+					Info(P).StartingTime = X->FinishingTime;
+					Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
+					while(Next(P) != Nil){
+						Next(P)->info.StartingTime = Info(P).FinishingTime;
+						Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
+						P = Next(P);
+					}
+				} else {
+					if(X->ArrivalTime > Info(R).FinishingTime){
+						X->StartingTime = X->ArrivalTime;
 					} else {
 						X->StartingTime = Info(P).StartingTime;
-						X->FinishingTime = X->StartingTime + X->InspectionTime;
-						Info(P).StartingTime = X->FinishingTime;
-						Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
-						while(Next(P) != Nil){
-							Next(P)->info.StartingTime = Info(P).FinishingTime;
-							Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
-							P = Next(P);
-						}
+					}
+					
+					X->StartingTime = Info(P).StartingTime;
+					X->FinishingTime = X->StartingTime + X->InspectionTime;
+					Info(P).StartingTime = X->FinishingTime;
+					Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
+					while(Next(P) != Nil){
+						Next(P)->info.StartingTime = Info(P).FinishingTime;
+						Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
+						P = Next(P);
 					}
 				}
 			}
+			
 		}
 	}
 }
