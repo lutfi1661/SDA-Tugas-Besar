@@ -102,7 +102,7 @@ void enQueue(Queue *Q, infotype data){
 				}
 				else if (P->info.Priority <= (*Q).Rear->info.Priority){
 					(*Q).Rear->next = P;
-					P = (*Q).Rear;
+					(*Q).Rear = P;
 				}
 				else {
 					addrNQ before;
@@ -149,12 +149,17 @@ Queue dengan aturan FIFO */
 /* Front(Q) menunjuk ke next antrian atau diset menjadi NIll, Q
 mungkin kosong */
 void deQueue(Queue *Q){
-	if(IsQueueEmpty(*Q)==1){
-		printf("\nMaaf Antrian Kosong.\n");	
-	}else {
+	if(IsQueueEmpty(*Q)==1) printf("\nMaaf Antrian Kosong.\n");
+	else {
 		addrNQ P;
 		P = (*Q).Front;
-		(*Q).Front = (*Q).Front->next;
+		if ((*Q).Front==(*Q).Rear){
+			(*Q).Front=NULL;
+			(*Q).Rear=NULL;
+		}
+		else{
+			(*Q).Front = (*Q).Front->next;
+		}
 		P->next=NULL;
 		Deallocation(&P);
 		printf("Antrian Dipanggil...\n");
