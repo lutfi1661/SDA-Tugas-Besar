@@ -97,7 +97,7 @@ void enQueue(Queue *Q, infotype data){
 					(*Q).Rear = P;
 				}
 			}
-			else if ((*Q).Front->info.ArrivalTime > P->info.ArrivalTime){
+			else {
 				(*Q).Front->next = P;
 				(*Q).Rear = P;
 			}
