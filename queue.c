@@ -78,63 +78,105 @@ int IsQueueEmpty(Queue Q){
 yang lama mengaitkan pointernya ke node yang baru */
 
 void enQueue(Queue *Q, infotype data){
-	addrNQ P;
+	addrNQ P, travel, before, after;
 	P = Allocation(data);
 
 	if (P != Nil){
 		if (IsQueueEmpty(*Q) == 1){
 			Front(*Q) = P;
 			Rear(*Q) = P;
-		}else{
-			if (Front(*Q)==Rear(*Q)){
-				if (P->info.Priority > (*Q).Front->info.Priority){
-					Front(*Q)=P;
-					P->next=Rear(*Q);
-				}else{
-					(*Q).Rear = P;
-					(*Q).Front->next=P;
-				}
-				
-			}else {
-				if (P->info.Priority > (*Q).Front->info.Priority){
+		}
+		else if((*Q).Front == (*Q).Rear){
+			if (P->info.ArrivalTime == (*Q).Front->info.ArrivalTime){
+				if ((*Q).Front->info.Priority < P->info.Priority){
 					P->next = (*Q).Front;
 					(*Q).Front = P;
 				}
-				else if (P->info.Priority <= (*Q).Rear->info.Priority){
-					(*Q).Rear->next = P;
+				else {
+					(*Q).Front->next = P;
 					(*Q).Rear = P;
 				}
-				else {
-					addrNQ before;
-					addrNQ after;
-					addrNQ travel;
+			}
+			else if ((*Q).Front->info.ArrivalTime > P->info.ArrivalTime){
+				(*Q).Front->next = P;
+				(*Q).Rear = P;
+			}
+		}
+		else{
+			if(P->info.ArrivalTime == (*Q).Front->info.ArrivalTime){
+				if ((*Q).Front->info.Priority < P->info.Priority){
+					P->next = (*Q).Front;
+					(*Q).Front = P;
+				}
+				else if ((*Q).Front->info.Priority <= P->info.Priority){
 					travel = (*Q).Front;
-					while (travel->info.Priority >= P->info.Priority){
+					while (P->info.Priority <= travel->info.Priority && travel->next!=NULL){
 						before = travel;
 						travel = travel->next;
 					}
-				
-					if (travel->next!=NULL){
-						after = travel->next;
-						if (travel->info.Priority < P->info.Priority){
-							before->next=P;
-							P->next=travel;
-						}
-						else {
-							while (travel->info.Priority <= after->info.Priority){
-								if (travel->info.Priority > after->info.Priority){
-									P->next=after;
-									travel->next = P;
-								}
-								travel = after;
-								after = after->next;
-							}
-						}
-						
+					if (travel->next==NULL){
+						travel->next = P;
+						(*Q).Rear = P;
 					}
-					else if (travel->next==NULL){
+					else if (travel->next!=NULL){
+						after = travel->next;
+						travel->next = P;
+						P->next = after;
+					}
+				}
+			}
+			else if(P->info.ArrivalTime != (*Q).Front->info.ArrivalTime){
+				travel = (*Q).Front;
+				while (travel->info.ArrivalTime == (*Q).Front->info.ArrivalTime && travel->next!=NULL){
+					before = travel;
+					travel = travel->next; 
+				}
+				if (travel->info.ArrivalTime != (*Q).Front->info.ArrivalTime && travel->next==NULL){
+					if (travel->info.Priority < P->info.Priority){
 						before->next = P;
 						P->next = travel;
+					}
+					else {
+						travel->next = P;
+						(*Q).Rear = P;
+					}
+				}
+				else if (travel->next==NULL){
+					travel->next = P;
+					(*Q).Rear = P;
+				}
+				else if (travel->info.ArrivalTime != (*Q).Front->info.ArrivalTime){
+					if (travel->info.Priority < P->info.Priority){
+						before->next = P;
+						P->next = travel;
+					}
+					else {
+						while (travel->info.Priority >= P->info.Priority){
+							before = travel;
+							travel = travel->next;
+						}
+						if (travel->next!=NULL){
+							after = travel->next;
+							if (travel->info.Priority < P->info.Priority){
+								before->next=P;
+								P->next=travel;
+							}
+							else {
+								while (travel->info.Priority <= after->info.Priority){
+									if (travel->info.Priority > after->info.Priority){
+										P->next=after;
+										travel->next = P;
+									}
+									travel = after;
+									after = after->next;
+								}
+							}
+						
+						}
+						else if (travel->next==NULL){
+							before->next = P;
+							P->next = travel;
+						}
 					}
 				}
 			}
