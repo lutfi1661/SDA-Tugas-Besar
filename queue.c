@@ -21,7 +21,7 @@ char *ArrDisease[9] = {
 	"Diare",
 	"Luka Dalam",
 	"Gangguan Kerongkongan yang Berbau Busuk",
-	"Gangguan Kerongkongan yang Berwarna Kuning",
+	"Penyakit Kuning",
 	"Terkena Virus"
 };
 
@@ -268,23 +268,46 @@ void setTime(Queue *Q, infotype *X){
 				P = Next(P);
 			}
 		}else if(X->Priority <= Info(P).Priority){
-			while(P != Nil){
-				if(X->Priority <= Info(P).Priority){
-					R = P;
-					P = Next(P);
-				}else{
-					X->StartingTime = Info(P).StartingTime;
-					X->FinishingTime = X->StartingTime + X->InspectionTime;
-					Info(P).StartingTime = X->FinishingTime;
-					Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
-					while(Next(P) != Nil){
-						Next(P)->info.StartingTime = Info(P).FinishingTime;
-						Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
+			if(Front(*Q)==Rear(*Q)){
+				X->StartingTime = Info(P).FinishingTime;
+				X->FinishingTime = X->StartingTime + X->InspectionTime;
+			} else {
+				while(P != Nil){
+					if(X->Priority <= Info(P).Priority ){
+						R = P;
 						P = Next(P);
+					} else {
+						break;
 					}
-					break;
 				}
-			}	
+				
+				if(P == Nil){
+					X->StartingTime = Info(R).FinishingTime;
+					X->FinishingTime = X->StartingTime + X->InspectionTime;
+				} else {
+					if(X->Priority == Info(R).Priority){
+						X->StartingTime = Info(R).StartingTime;
+						X->FinishingTime = X->StartingTime + X->InspectionTime;
+						Info(P).StartingTime = X->FinishingTime;
+						Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
+						while(Next(P) != Nil){
+							Next(P)->info.StartingTime = Info(P).FinishingTime;
+							Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
+							P = Next(P);
+						}
+					} else {
+						X->StartingTime = Info(P).StartingTime;
+						X->FinishingTime = X->StartingTime + X->InspectionTime;
+						Info(P).StartingTime = X->FinishingTime;
+						Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
+						while(Next(P) != Nil){
+							Next(P)->info.StartingTime = Info(P).FinishingTime;
+							Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
+							P = Next(P);
+						}
+					}
+				}
+			}
 		}
 	}
 }
