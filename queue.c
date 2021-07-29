@@ -80,8 +80,11 @@ yang lama mengaitkan pointernya ke node yang baru */
 void enQueue(Queue *Q, infotype data){
 	addrNQ P, travel, before, after;
 	P = Allocation(data);
-
-	if (P != Nil){
+	if (P!=Nil && (*Q).Rear->info.FinishingTime < P->info.ArrivalTime){
+		(*Q).Rear->next = P;
+		(*Q).Rear = P;
+	}	
+	else if (P != Nil && (*Q).Rear->info.FinishingTime >= P->info.ArrivalTime){
 		if (IsQueueEmpty(*Q) == 1){
 			Front(*Q) = P;
 			Rear(*Q) = P;
