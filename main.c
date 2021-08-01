@@ -33,7 +33,7 @@ int main(){
 			PrintQueue(Q);
 			system("pause");
 		}else if (option == 4){
-			puts("Terima kasih telah menggunakan Aplikasi Layanan Dokter Hewan");
+			printf("\nTerima kasih telah menggunakan Aplikasi Layanan Dokter Hewan");
 			exit(0);
 		}else{
 			printf("Maaf, masukan Anda salah. Silahkan coba lagi.");
