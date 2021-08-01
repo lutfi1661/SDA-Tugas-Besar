@@ -11,7 +11,7 @@ int main(){
 
 	do{
 		system("cls");
-		puts("=== SELAMAT DATANG DI KAEL-6 STORE ===");
+		puts("=== SELAMAT DATANG DI KAEL-6 : PET SHOP ===");
 		puts("MENU UTAMA");
 		puts("[1] Registrasi");
 		puts("[2] Panggil Antrian");
@@ -38,6 +38,7 @@ int main(){
 			exit(0);
 		}else{
 			printf("Maaf, masukan Anda salah. Silahkan coba lagi.");
+			system("pause");
 		}
 	}while (option != 4);
 
