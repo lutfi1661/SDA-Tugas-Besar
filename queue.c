@@ -79,16 +79,18 @@ yang lama mengaitkan pointernya ke node yang baru */
 
 void enQueue(Queue *Q, infotype data){
 	addrNQ P, travel, before, after;
+	
 	P = Allocation(data);
+	
 	if (IsQueueEmpty(*Q) == 1){
 		Front(*Q) = P;
 		Rear(*Q) = P;
 	}
-	else if (P!=Nil && (*Q).Rear->info.FinishingTime < P->info.ArrivalTime){
+	else if ((*Q).Rear->info.StartingTime < P->info.ArrivalTime){
 		(*Q).Rear->next = P;
 		(*Q).Rear = P;
 	}	
-	else if (P != Nil && (*Q).Rear->info.FinishingTime >= P->info.ArrivalTime){
+	else if ((*Q).Rear->info.StartingTime >= P->info.ArrivalTime){
 		if((*Q).Front == (*Q).Rear){
 			if (P->info.ArrivalTime == (*Q).Front->info.ArrivalTime){
 				if ((*Q).Front->info.Priority < P->info.Priority){
@@ -111,20 +113,23 @@ void enQueue(Queue *Q, infotype data){
 					P->next = (*Q).Front;
 					(*Q).Front = P;
 				}
-				else if ((*Q).Front->info.Priority <= P->info.Priority){
+				else if ((*Q).Front->info.Priority >= P->info.Priority){
 					travel = (*Q).Front;
 					while (P->info.Priority <= travel->info.Priority && travel->next!=NULL){
 						before = travel;
 						travel = travel->next;
 					}
-					if (travel->next==NULL){
+					if (P->info.Priority > travel->info.Priority && travel->next==NULL){
+						before->next=P;
+						P->next=travel;
+					}
+					else if (P->info.Priority <= travel->info.Priority && travel->next==NULL){
 						travel->next = P;
 						(*Q).Rear = P;
 					}
-					else if (travel->next!=NULL){
-						after = travel->next;
-						travel->next = P;
-						P->next = after;
+					else if (P->info.Priority > travel->info.Priority && travel->next!=NULL){
+						before->next=P;
+						P->next=travel;
 					}
 				}
 			}
@@ -154,13 +159,13 @@ void enQueue(Queue *Q, infotype data){
 						P->next = travel;
 					}
 					else {
-						while (travel->info.Priority >= P->info.Priority){
+						while (travel->info.Priority >= P->info.Priority && travel->next!=NULL){
 							before = travel;
 							travel = travel->next;
 						}
 						if (travel->next!=NULL){
 							after = travel->next;
-							if (travel->info.Priority < P->info.Priority){
+							if (travel->info.Priority <= P->info.Priority){
 								before->next=P;
 								P->next=travel;
 							}
@@ -177,8 +182,15 @@ void enQueue(Queue *Q, infotype data){
 						
 						}
 						else if (travel->next==NULL){
-							before->next = P;
-							P->next = travel;
+							if(travel->info.Priority < P->info.Priority){
+								before->next=P;
+								P->next = travel;
+								(*Q).Rear = travel;
+							}
+							else if(travel->info.Priority >= P->info.Priority){
+								travel->next = P;
+								(*Q).Rear = P;	
+							}
 						}
 					}
 				}
@@ -194,7 +206,9 @@ Queue dengan aturan FIFO */
 /* Front(Q) menunjuk ke next antrian atau diset menjadi NIll, Q
 mungkin kosong */
 void deQueue(Queue *Q){
-	if(IsQueueEmpty(*Q)==1) printf("\nMaaf Antrian Kosong.\n");
+	if(IsQueueEmpty(*Q)==1){
+		printf("\nMaaf Antrian Kosong.\n");	
+	}
 	else {
 		addrNQ P;
 		P = (*Q).Front;
@@ -206,8 +220,9 @@ void deQueue(Queue *Q){
 			(*Q).Front = (*Q).Front->next;
 		}
 		P->next=NULL;
+		printf("Antrian Berikutnya : %s\n", P->info.Name);
+		printf("Silahkan Menuju Ruang Pemeriksaan\n");
 		Deallocation(&P);
-		printf("Antrian Dipanggil...\n");
 	}
 }
 
@@ -305,79 +320,33 @@ int WaitingTimeCount(addrNQ P, int ArrivalTime){
 /*	
   Menentukan dan mengubah waktu mulai dan waktu selesai jika terjadi perubahan urutan antrian berdasarkan nilai prioritas
 */
-void setTime(Queue *Q, infotype *X){
-	addrNQ P, R;
+void setTime(Queue *Q){
+	addrNQ travel, before;
 	
-	if(IsQueueEmpty(*Q)){
-		X->StartingTime = X->ArrivalTime;
-		X->FinishingTime = X->ArrivalTime + X->InspectionTime;
-	}else if(Front(*Q)==Rear(*Q)){
-		X->StartingTime = Info(Front(*Q)).FinishingTime;
-		X->FinishingTime = X->StartingTime + X->InspectionTime;
-	} else {
-		P = Next(Front(*Q));
-		if(X->Priority > Info(P).Priority){
-			X->StartingTime = Info(P).StartingTime;
-			X->FinishingTime = X->StartingTime + X->InspectionTime;
-			Info(P).StartingTime = X->FinishingTime;
-			Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
-			while(Next(P) != Nil){
-				Next(P)->info.StartingTime = Info(P).FinishingTime;
-				Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
-				P = Next(P);
+	travel=(*Q).Front;
+	
+	if (Front(*Q)==Rear(*Q)){
+		travel->info.WaitingTime = 0;
+		travel->info.StartingTime = travel->info.ArrivalTime;
+		travel->info.FinishingTime = travel->info.StartingTime + travel->info.InspectionTime;
+	}
+	else {
+		while(travel!=NULL){
+			if (travel==Front(*Q)){
+				travel->info.WaitingTime = 0;
+				travel->info.StartingTime = travel->info.ArrivalTime;
+				travel->info.FinishingTime = travel->info.StartingTime + travel->info.InspectionTime;
 			}
-		}else if(X->Priority <= Info(P).Priority){
-			while(P != Nil){
-				if(X->Priority <= Info(P).Priority ){
-					R = P;
-					P = Next(P);
-				} else {
-					break;
+			else{
+				if(before->info.FinishingTime > travel->info.ArrivalTime){
+					travel->info.WaitingTime = before->info.FinishingTime - travel->info.ArrivalTime;
 				}
+				else travel->info.WaitingTime = 0;
+				travel->info.StartingTime = travel->info.WaitingTime + travel->info.ArrivalTime;
+				travel->info.FinishingTime = travel->info.StartingTime + travel->info.InspectionTime;
 			}
-			
-			if(P == Nil){
-				if(X->ArrivalTime > Info(R).FinishingTime){
-					X->StartingTime = X->ArrivalTime;
-				} else {
-					X->StartingTime = Info(R).FinishingTime;
-				}
-				X->FinishingTime = X->StartingTime + X->InspectionTime;
-			} else {
-				if(X->Priority == Info(R).Priority){
-					if(X->ArrivalTime > Info(R).FinishingTime){
-						X->StartingTime = X->ArrivalTime;
-					} else {
-						X->StartingTime = Info(R).StartingTime;
-					}
-					
-					X->FinishingTime = X->StartingTime + X->InspectionTime;
-					Info(P).StartingTime = X->FinishingTime;
-					Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
-					while(Next(P) != Nil){
-						Next(P)->info.StartingTime = Info(P).FinishingTime;
-						Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
-						P = Next(P);
-					}
-				} else {
-					if(X->ArrivalTime > Info(R).FinishingTime){
-						X->StartingTime = X->ArrivalTime;
-					} else {
-						X->StartingTime = Info(P).StartingTime;
-					}
-					
-					X->StartingTime = Info(P).StartingTime;
-					X->FinishingTime = X->StartingTime + X->InspectionTime;
-					Info(P).StartingTime = X->FinishingTime;
-					Info(P).FinishingTime = Info(P).StartingTime + Info(P).InspectionTime;
-					while(Next(P) != Nil){
-						Next(P)->info.StartingTime = Info(P).FinishingTime;
-						Next(P)->info.FinishingTime = Info(P).FinishingTime + Next(P)->info.InspectionTime;
-						P = Next(P);
-					}
-				}
-			}
-			
+			before = travel;
+			travel = travel->next;
 		}
 	}
 }
@@ -432,9 +401,9 @@ void Registration(Queue *Q){
 	}
 	X.Priority = PriorityCount(RCount, SCount, BCount);
 	X.InspectionTime = InspectionTimeCount(RCount, SCount, BCount);
-	setTime(*(&Q),&X);
 	
 	enQueue(Q, X);
+	setTime(*(&Q));
 }
 
 /*	
@@ -445,7 +414,7 @@ void PrintQueue(Queue Q){
 	addrNQ P;
 	address F;
 
-	int i = 1, j, length;
+	int i = 1;
 
 	P = Front(Q);
 
@@ -465,6 +434,7 @@ void PrintQueue(Queue Q){
 			PrintInfo(Info(P).DiseaseList, ArrDisease);
 			
 			printf("Prioritas		: %d\n", Info(P).Priority);
+			printf("Waktu Tunggu		: %d\n", Info(P).WaitingTime);
 			printf("Waktu Pemeriksaan	: %d\n", Info(P).InspectionTime);
 			printf("Waktu Mulai 		: %d\n", Info(P).StartingTime);
 			printf("Waktu Selesai		: %d\n", Info(P).FinishingTime);

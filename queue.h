@@ -110,13 +110,11 @@ int PriorityCount(int Ringan, int Sedang, int Berat);
 */
 int InspectionTimeCount(int Ringan, int Sedang, int Berat);
 
-int WaitingTimeCount(addrNQ P, int ArrivalTime);
-
 
 /*	
   Menentukan dan mengubah waktu mulai dan waktu selesai jika terjadi perubahan urutan antrian berdasarkan nilai prioritas
 */
-void setTime(Queue *Q, infotype *X);
+void setTime(Queue *Q);
 
 /*	
   Menampilkan menu registrasi dan menerima masukan pengguna yang akan dimasukkan ke dalam Queue
