@@ -37,7 +37,7 @@ int main(){
 			printf("\nTerima kasih telah menggunakan Aplikasi Layanan Dokter Hewan");
 			exit(0);
 		}else{
-			printf("Maaf, masukan Anda salah. Silahkan coba lagi.");
+			printf("Maaf, masukan Anda salah. Silahkan coba lagi\n");
 			system("pause");
 		}
 	}while (option != 4);
