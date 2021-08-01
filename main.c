@@ -28,6 +28,7 @@ int main(){
 		}
 		else if (option == 2){
 			deQueue(&Q);
+			PrintQueue(Q);
 			system("pause");
 		}else if (option == 3){
 			PrintQueue(Q);
