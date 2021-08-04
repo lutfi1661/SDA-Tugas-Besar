@@ -11,12 +11,15 @@ int main(){
 
 	do{
 		system("cls");
-		puts("=== SELAMAT DATANG DI KAEL-6 : PET SHOP ===");
+		puts("============================================");
+		puts("             KAEL-6 : PET SHOP              ");
+		puts("============================================");
 		puts("MENU UTAMA");
 		puts("[1] Registrasi");
 		puts("[2] Panggil Antrian");
 		puts("[3] Daftar Antrian");
-		puts("[4] Keluar");
+		puts("[4] Riwayat Antrian");
+		puts("[5] Keluar");
 
 		printf("Pilih : ");
 		scanf("%d", &option);
@@ -34,13 +37,16 @@ int main(){
 			PrintQueue(Q);
 			system("pause");
 		}else if (option == 4){
+			PrintHistory();
+			system("pause");
+		}else if (option == 5){
 			printf("\nTerima kasih telah menggunakan Aplikasi Layanan Dokter Hewan");
 			exit(0);
 		}else{
 			printf("Maaf, masukan Anda salah. Silahkan coba lagi\n");
 			system("pause");
 		}
-	}while (option != 4);
+	}while (option != 5);
 
 	return 0;
 }

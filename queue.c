@@ -4,15 +4,8 @@
 #include <string.h>
 #include <conio.h>
 
-/***** Manajemen memori *****/
-/* Mengirimkan address hasil alokasi sebuah elemen dengan info X.
-* Jika alokasi berhasil, modul mengembalikan P; Info(P) = X,
-Next(P) = NULL.
-* P adalah pointer yang menunjuk ke node Queue sebagai hasil
-alokasi.
-* Jika alokasi gagal, modul mengembalikan NULL.
+/* Variabel Global
 */
-
 char *ArrDisease[9] = {
 	"Bersin",
 	"Luka Ringan",
@@ -25,11 +18,19 @@ char *ArrDisease[9] = {
 	"Terkena Virus"
 };
 
+/***** Manajemen memori *****/
+/* Mengirimkan address hasil alokasi sebuah elemen dengan info X.
+* Jika alokasi berhasil, modul mengembalikan P; Info(P) = X,
+Next(P) = NULL.
+* P adalah pointer yang menunjuk ke node Queue sebagai hasil
+alokasi.
+* Jika alokasi gagal, modul mengembalikan NULL.
+*/
 addrNQ Allocation(infotype X){
 	addrNQ P;
-	
+
 	P = (addrNQ)malloc(sizeof(NodeQueue));
-	
+
 	if (P != Nil){
 		Info(P) = X;
 		Next(P) = Nil;
@@ -91,7 +92,7 @@ void enQueue(Queue *Q, infotype data){
 		(*Q).Rear->next = P;
 		(*Q).Rear = P;
 	}
-	//Insert Ketika waktu mulai pada rear lebih dari atau sama dengan waktu kedatangan node baru	
+	//Insert Ketika waktu mulai pada rear lebih dari atau sama dengan waktu kedatangan node baru
 	else if ((*Q).Rear->info.StartingTime >= P->info.ArrivalTime){
 		//Jika hanya terdapat 1 node pada queue
 		if((*Q).Front == (*Q).Rear){
@@ -155,7 +156,7 @@ void enQueue(Queue *Q, infotype data){
 				//Travel berjalan seperti pada line 133
 				while (travel->info.ArrivalTime == (*Q).Front->info.ArrivalTime && travel->next!=NULL){
 					before = travel;
-					travel = travel->next; 
+					travel = travel->next;
 				}
 				//Kondisi kondisi ketika travel berhenti bergerak (endwhile)
 				if (travel->info.ArrivalTime != (*Q).Front->info.ArrivalTime && travel->next==NULL){
@@ -202,7 +203,7 @@ void enQueue(Queue *Q, infotype data){
 									after = after->next;
 								}
 							}
-						
+
 						}
 						//kondisi ketika travel sudah bergerak higga rear dan berhenti di rear
 						else if (travel->next==NULL){
@@ -213,7 +214,7 @@ void enQueue(Queue *Q, infotype data){
 							}
 							else if(travel->info.Priority >= P->info.Priority){
 								travel->next = P;
-								(*Q).Rear = P;	
+								(*Q).Rear = P;
 							}
 						}
 					}
@@ -230,7 +231,8 @@ Queue dengan aturan FIFO */
 mungkin kosong */
 void deQueue(Queue *Q){
 	if(IsQueueEmpty(*Q)==1){
-		printf("\nMaaf Antrian Kosong.\n");	
+		puts("============================================");
+		printf("Maaf Antrian Kosong.\n");
 	}
 	else {
 		addrNQ P;
@@ -243,9 +245,14 @@ void deQueue(Queue *Q){
 			(*Q).Front = (*Q).Front->next;
 		}
 		P->next=NULL;
+
+		printf("============================================\n");
 		printf("Antrian Berikutnya : %s\n", P->info.Name);
 		printf("Silahkan Menuju Ruang Pemeriksaan\n");
+
+		EntryHistoryFile(P);
 		Deallocation(&P);
+		EntryQueueFile(Q);
 	}
 }
 
@@ -266,18 +273,32 @@ int NBElmt(Queue Q){
 	return count;
 }
 
-/*
-  Menampilkan daftar penyakit yang diambil dari variabel global ArrDisease
+/* Menampilkan daftar penyakit yang diambil dari variabel global ArrDisease
+   dan mengelompokkannya ke dalam kategori
 */
 void PrintDisease(){
-	int i;
-	for (i = 0; i < 9; i++){
-		printf("[%i] %s\n", i + 1, ArrDisease[i]);
+	int i, j;
+	for(i = 1; i < 4; i++){
+		if(i == 1){
+			puts(" Kategori Ringan");
+			for(j = 0; j < 3; j++){
+				printf("  [%i] %s \n", j + 1, ArrDisease[j]);
+			}
+		}else if(i == 2){
+			puts(" Kategori Sedang");
+			for(j = 3; j < 6; j++){
+				printf("  [%i] %s \n", j + 1, ArrDisease[j]);
+			}
+		}else{
+			puts(" Kategori Berat");
+			for(j = 6; j < 9; j++){
+				printf("  [%i] %s \n", j + 1, ArrDisease[j]);
+			}
+		}
 	}
 }
 
-/*
-  Mengembalikan nilai string apakah Ringan, Sedang atau Berat berdasarkan penyakit yang diderita
+/* Mengembalikan nilai string apakah Ringan, Sedang atau Berat berdasarkan penyakit yang diderita
 */
 char *CategoryCheck(int Disease){
 	if (Disease < 4){
@@ -289,8 +310,7 @@ char *CategoryCheck(int Disease){
 	}
 }
 
-/*
-  Mengembalikan nilai integer berupa waktu pemeriksaan berdasarkan kategori penyakit
+/* Mengembalikan nilai integer berupa waktu pemeriksaan setiap penyakit berdasarkan kategori penyakit
 */
 int InspectionTimeCheck(int Disease){
 	if (Disease < 4){
@@ -302,12 +322,13 @@ int InspectionTimeCheck(int Disease){
 	}
 }
 
-/*
-  Mengembalikan nilai integer berupa perhitungan nilai prioritas berdasarkan jumlah penyakit dan kategori penyakit
+/* Proses : Mengembalikan nilai integer berupa perhitungan nilai prioritas berdasarkan jumlah penyakit dan kategori penyakit
+   I.S : variabel count bernilai 1
+   F.S : Nilai variabel count tetap atau berubah
 */
 int PriorityCount(int Ringan, int Sedang, int Berat){
 	int count = 1;
-	
+
 	if (Berat >= 1){
 		count += 4;
 	}
@@ -321,33 +342,22 @@ int PriorityCount(int Ringan, int Sedang, int Berat){
 	return count;
 }
 
-/*
-  Mengembalikan nilai integer untuk waktu pemeriksaan berdasarkan setiap penyakit yang diderita
+/* Mengembalikan nilai integer untuk waktu pemeriksaan berdasarkan jumlah setiap penyakit yang diderita
 */
 int InspectionTimeCount(int Ringan, int Sedang, int Berat){
 	return (Ringan * 15) + (Sedang * 30) + (Berat * 45);
 }
 
-int WaitingTimeCount(addrNQ P, int ArrivalTime){
-	if(P == Nil){
-		return 0;
-	}else{
-		if(ArrivalTime < Info(P).FinishingTime){
-			return Info(P).FinishingTime - ArrivalTime;
-		}else{
-			return 0;
-		}
-	}
-}
-
-/*	
-  Menentukan dan mengubah waktu mulai dan waktu selesai jika terjadi perubahan urutan antrian berdasarkan nilai prioritas
+/* Proses : Menghitung dan mengubah waktu tunggu, waktu mulai, dan waktu selesai jika terjadi
+             perubahan urutan antrian
+   I.S : Semua waktu belum ada nilai atau tidak sesuai
+   F.S : Nilai semua waktu berubah seiring adanya perubahan urutan queue
 */
 void setTime(Queue *Q){
 	addrNQ travel, before;
-	
+
 	travel=(*Q).Front;
-	
+
 	if (Front(*Q)==Rear(*Q)){
 		travel->info.WaitingTime = 0;
 		travel->info.StartingTime = travel->info.ArrivalTime;
@@ -374,8 +384,9 @@ void setTime(Queue *Q){
 	}
 }
 
-/*
-  Menampilkan menu registrasi dan menerima masukan pengguna yang akan dimasukkan ke dalam Queue
+/* Proses : Menampilkan menu registrasi dan menerima masukan pengguna yang akan dimasukkan ke dalam Queue
+   I.S : Data queue belum dimasukkan
+   F.S : Data dari inputan pengguna dimasukkan ke dalam queue dan menampilkan isi daftar antrian
 */
 void Registration(Queue *Q){
 	system("cls");
@@ -387,7 +398,9 @@ void Registration(Queue *Q){
 
 	int i, SymptomTotal;
 
-	printf("========== REGISTRASI ==========\n");
+	puts("============================================");
+    puts("                 REGISTRASI                 ");
+    puts("============================================");
 	printf("Waktu Kedatangan		: ");
 	scanf("%d", &X.ArrivalTime);
 	fflush(stdin);
@@ -424,47 +437,157 @@ void Registration(Queue *Q){
 	}
 	X.Priority = PriorityCount(RCount, SCount, BCount);
 	X.InspectionTime = InspectionTimeCount(RCount, SCount, BCount);
-	
+
 	enQueue(Q, X);
 	setTime(*(&Q));
+	EntryQueueFile(Q);
 }
 
-/*	
-  Menampilkan daftar antrian yang memuat informasi total antrian, no urut antrian, nama, waktu kedatangan, 
-  daftar penyakit, prioritas, waktu pemeriksaan, waktu mulai dan waktu selesai
+/* Proses : Memasukkan data-data queue yang terinput ke dalam file daftar-antrian.txt
+           dan mengubah seluruh isi file seiring terjadinya perubahan urutan
+   I.S : File mungkin kosong atau tidak ada
+   F.S : Jika file tersebut tidak ada, program mengirimkan pesan eror
+  		 Jika ada, program akan meng-overwrite data-data queue
 */
-void PrintQueue(Queue Q){
-	addrNQ P;
-	address F;
+void EntryQueueFile(Queue *Q){
+	FILE *FQueue = fopen("daftar-antrian.txt", "w");
+
+	addrNQ P = Front(*Q);
+	address L;
 
 	int i = 1;
 
-	P = Front(Q);
+	if (FQueue == NULL){
+        printf("Error: File tidak ditemukan!");
+    }else{
+    	fputs("============================================\n", FQueue);
+    	fputs("               DAFTAR ANTRIAN               \n", FQueue);
+    	fputs("============================================\n", FQueue);
+    	fprintf(FQueue, "Total Antrian		: %d\n", NBElmt(*Q));
+    	fputs("--------------------------------------------\n", FQueue);
 
-	puts("========== DAFTAR ANTRIAN ==========");
-	
-	if(P == Nil){
-		puts("\nSaat ini belum ada antrian yang masuk");
-	}else{
-		printf("Total Antrian		: %d\n", NBElmt(Q));
-		puts("------------------------------------");
 		while (P != Nil){
-			printf("No. Urut Antrian	: %d\n", i++);
-			printf("Nama			: %s\n", Info(P).Name);
-			printf("Waktu Kedatangan	: %d\n", Info(P).ArrivalTime);
-			puts("Penyakit yang Diderita	:");
-	
-			PrintInfo(Info(P).DiseaseList, ArrDisease);
-			
-			printf("Prioritas		: %d\n", Info(P).Priority);
-			printf("Waktu Tunggu		: %d\n", Info(P).WaitingTime);
-			printf("Waktu Pemeriksaan	: %d\n", Info(P).InspectionTime);
-			printf("Waktu Mulai 		: %d\n", Info(P).StartingTime);
-			printf("Waktu Selesai		: %d\n", Info(P).FinishingTime);
-	
-			puts("------------------------------------");
-	
+			fprintf(FQueue, "No. Urut Antrian	: %d\n", i++);
+			fprintf(FQueue, "Nama			: %s\n", Info(P).Name);
+			fprintf(FQueue, "Waktu Kedatangan	: %d\n", Info(P).ArrivalTime);
+			fputs("Penyakit yang Diderita	:\n", FQueue);
+
+			L = Info(P).DiseaseList.First;
+
+			if(L == Nil){
+				printf("List Kosong!");
+			}else{
+				int j = 1;
+
+				while(L != Nil){
+					fprintf(FQueue,"  %d. %s (%s)\n", j++, ArrDisease[L->info.Disease - 1], L->info.Category);
+					L = L->next;
+				}
+			}
+
+			fprintf(FQueue, "Prioritas		: %d\n", Info(P).Priority);
+			fprintf(FQueue, "Waktu Tunggu		: %d\n", Info(P).WaitingTime);
+			fprintf(FQueue, "Waktu Pemeriksaan	: %d\n", Info(P).InspectionTime);
+			fprintf(FQueue, "Waktu Mulai 		: %d\n", Info(P).StartingTime);
+			fprintf(FQueue, "Waktu Selesai		: %d\n", Info(P).FinishingTime);
+
+			fputs("--------------------------------------------\n", FQueue);
+			fprintf(FQueue, "\n");
+
 			P = Next(P);
 		}
 	}
+
+	fclose(FQueue);
+}
+
+/* Proses : Memasukkan data-data queue yang terhapus ke dalam file riwayat-antrian.txt
+  		   secara berurutan
+   I.S : File mungkin kosong atau tidak ada
+   F.S : Jika file tersebut tidak ada, program mengirimkan pesan eror
+  		 Jika file ada, program akan memasukkan data-data queue yang terhapus tanpa menimpa data
+  		 sebelumnya
+*/
+void EntryHistoryFile(addrNQ P){
+	FILE *FHistory = fopen("riwayat-antrian.txt", "a");
+	address L;
+
+	static int iH = 1, jH = 1;
+
+	if (FHistory == NULL){
+        printf("Error: File tidak ditemukan!");
+    }else{
+		fprintf(FHistory, "No. Urut Antrian	: %d\n", iH++);
+		fprintf(FHistory, "Nama			: %s\n", Info(P).Name);
+		fprintf(FHistory, "Waktu Kedatangan	: %d\n", Info(P).ArrivalTime);
+		fputs("Penyakit yang Diderita	:\n", FHistory);
+
+		L = Info(P).DiseaseList.First;
+
+		if(L == Nil){
+			printf("List Kosong!");
+		}else{
+			int j = 1;
+
+			while(L != Nil){
+				fprintf(FHistory,"  %d. %s (%s)\n", j++, ArrDisease[L->info.Disease - 1], L->info.Category);
+				L = L->next;
+			}
+		}
+
+		fprintf(FHistory, "Prioritas		: %d\n", Info(P).Priority);
+		fprintf(FHistory, "Waktu Tunggu		: %d\n", Info(P).WaitingTime);
+		fprintf(FHistory, "Waktu Pemeriksaan	: %d\n", Info(P).InspectionTime);
+		fprintf(FHistory, "Waktu Mulai 		: %d\n", Info(P).StartingTime);
+		fprintf(FHistory, "Waktu Selesai		: %d\n", Info(P).FinishingTime);
+
+		fputs("------------------------------------\n", FHistory);
+		fprintf(FHistory, "\n");
+	}
+
+	fclose(FHistory);
+}
+
+/* Proses : Membaca seluruh isi file daftar-antrian.txt
+   I.S : File mungkin tidak ada atau mungkin ada
+   F.S : Jika file tidak ditemukan, program mengirimkan pesan eror
+         Jika file ada, program menampilkan isi dari file daftar-antrian.txt
+*/
+void PrintQueue(Queue Q){
+	FILE *FQueue = fopen("daftar-antrian.txt", "r");
+
+	char qtext[100];
+
+	if (FQueue == NULL){
+        printf("Error: File tidak ditemukan!");
+    }else{
+    	while(!feof(FQueue)){
+			fgets(qtext, 150, FQueue);
+			printf(qtext);
+		}
+	}
+
+	fclose(FQueue);
+}
+
+/* Proses : Membaca seluruh isi file riwayat-antrian.txt
+   I.S : File mungkin tidak ada atau mungkin ada
+   F.S : Jika file tidak ditemukan, program mengirimkan pesan eror
+         Jika file ada, program menampilkan isi dari file riwayat-antrian.txt
+*/
+void PrintHistory(){
+	FILE *FHistory = fopen("riwayat-antrian.txt", "r");
+
+	char htext[100];
+
+	if (FHistory == NULL){
+        printf("Error: File tidak ditemukan!");
+    }else{
+    	while(!feof(FHistory)){
+			fgets(htext, 150, FHistory);
+			printf(htext);
+		}
+	}
+
+	fclose(FHistory);
 }
