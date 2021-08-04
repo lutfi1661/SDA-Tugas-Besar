@@ -85,46 +85,62 @@ mengirimkan 0 jika Q kosong
 */
 int NBElmt(Queue Q);
 
-/*	
-  Menampilkan daftar penyakit yang diambil dari variabel global ArrDisease
+/***** Algoritma Program *****/
+/* Menampilkan daftar penyakit yang diambil dari variabel global ArrDisease
+   dan mengelompokkannya ke dalam kategori
 */
 void PrintDisease();
-
-/*
-  Mengembalikan nilai string apakah Ringan, Sedang atau Berat berdasarkan penyakit yang diderita
+/* Mengembalikan nilai string apakah Ringan, Sedang atau Berat berdasarkan penyakit yang diderita
 */
 char *CategoryCheck(int Disease);
-
-/*
-  Mengembalikan nilai integer berupa waktu pemeriksaan berdasarkan kategori penyakit
+/* Mengembalikan nilai integer berupa waktu pemeriksaan setiap penyakit berdasarkan kategori penyakit
 */
 int InspectionTimeCheck(int Disease);
-
-/*
-  Mengembalikan nilai integer berupa perhitungan nilai prioritas berdasarkan jumlah penyakit dan kategori penyakit
+/* Proses : Mengembalikan nilai integer berupa perhitungan nilai prioritas berdasarkan jumlah penyakit dan kategori penyakit
+   I.S : variabel count bernilai 1
+   F.S : Nilai variabel count tetap atau berubah
 */
 int PriorityCount(int Ringan, int Sedang, int Berat);
-
-/*
-  Mengembalikan nilai integer untuk waktu pemeriksaan berdasarkan setiap penyakit yang diderita
+/* Mengembalikan nilai integer untuk waktu pemeriksaan berdasarkan jumlah setiap penyakit yang diderita
 */
 int InspectionTimeCount(int Ringan, int Sedang, int Berat);
-
-
-/*	
-  Menentukan dan mengubah waktu mulai dan waktu selesai jika terjadi perubahan urutan antrian berdasarkan nilai prioritas
+/* Proses : Menghitung dan mengubah waktu tunggu, waktu mulai, dan waktu selesai jika terjadi
+             perubahan urutan antrian
+   I.S : Semua waktu belum ada nilai atau tidak sesuai
+   F.S : Nilai semua waktu berubah seiring adanya perubahan urutan queue
 */
 void setTime(Queue *Q);
-
-/*	
-  Menampilkan menu registrasi dan menerima masukan pengguna yang akan dimasukkan ke dalam Queue
+/* Proses : Menampilkan menu registrasi dan menerima masukan pengguna yang akan dimasukkan ke dalam Queue
+   I.S : Data queue belum dimasukkan
+   F.S : Data dari inputan pengguna dimasukkan ke dalam queue dan menampilkan isi daftar antrian
 */
 void Registration(Queue *Q);
-
-/*	
-  Menampilkan daftar antrian yang memuat informasi total antrian, no urut antrian, nama, waktu kedatangan, 
-  daftar penyakit, prioritas, waktu pemeriksaan, waktu mulai dan waktu selesai
+/* Proses : Memasukkan data-data queue yang terinput ke dalam file daftar-antrian.txt
+           dan mengubah seluruh isi file seiring terjadinya perubahan urutan
+   I.S : File mungkin kosong atau tidak ada
+   F.S : Jika file tersebut tidak ada, program mengirimkan pesan eror
+  		 Jika ada, program akan meng-overwrite data-data queue
+*/
+void EntryQueueFile(Queue *Q);
+/* Proses : Memasukkan data-data queue yang terhapus ke dalam file riwayat-antrian.txt
+  		   secara berurutan
+   I.S : File mungkin kosong atau tidak ada
+   F.S : Jika file tersebut tidak ada, program mengirimkan pesan eror
+  		 Jika file ada, program akan memasukkan data-data queue yang terhapus tanpa menimpa data
+  		 sebelumnya
+*/
+void EntryHistoryFile(addrNQ P);
+/* Proses : Membaca seluruh isi file daftar-antrian.txt
+   I.S : File mungkin tidak ada atau mungkin ada
+   F.S : Jika file tidak ditemukan, program mengirimkan pesan eror
+         Jika file ada, program menampilkan isi dari file daftar-antrian.txt
 */
 void PrintQueue(Queue Q);
+/* Proses : Membaca seluruh isi file riwayat-antrian.txt
+   I.S : File mungkin tidak ada atau mungkin ada
+   F.S : Jika file tidak ditemukan, program mengirimkan pesan eror
+         Jika file ada, program menampilkan isi dari file riwayat-antrian.txt
+*/
+void PrintHistory();
 
 #endif // QUEUE_H
