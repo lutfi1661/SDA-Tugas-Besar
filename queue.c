@@ -79,46 +79,62 @@ yang lama mengaitkan pointernya ke node yang baru */
 
 void enQueue(Queue *Q, infotype data){
 	addrNQ P, travel, before, after;
-	
+	//Membuat node baru dengan nama P
 	P = Allocation(data);
-	
+	//Insert in First Queue
 	if (IsQueueEmpty(*Q) == 1){
 		Front(*Q) = P;
 		Rear(*Q) = P;
 	}
+	//Insert Ketika waktu mulai pada Rear kurang dari waktu kedatangan node baru
 	else if ((*Q).Rear->info.StartingTime < P->info.ArrivalTime){
 		(*Q).Rear->next = P;
 		(*Q).Rear = P;
-	}	
+	}
+	//Insert Ketika waktu mulai pada rear lebih dari atau sama dengan waktu kedatangan node baru	
 	else if ((*Q).Rear->info.StartingTime >= P->info.ArrivalTime){
+		//Jika hanya terdapat 1 node pada queue
 		if((*Q).Front == (*Q).Rear){
+			//jika waktu kedatangan node baru sama seperti waktu kedatangan front
 			if (P->info.ArrivalTime == (*Q).Front->info.ArrivalTime){
+				//Jika prioritas Front kurang dari node baru
 				if ((*Q).Front->info.Priority < P->info.Priority){
 					P->next = (*Q).Front;
 					(*Q).Front = P;
 				}
+				//Jika prioritas Front lebih dari aau sama dengan dari node Baru
 				else {
 					(*Q).Front->next = P;
 					(*Q).Rear = P;
 				}
 			}
+			//Jika waktu kedatangan node baru tidak sama dengan waktu kedatangan front
 			else {
 				(*Q).Front->next = P;
 				(*Q).Rear = P;
 			}
 		}
+		//Jika terdapat 2 atau lebih node pada queueu
 		else{
+			//Jika waktu kedatangan front sama dengan waktu kedatangan node baru
 			if(P->info.ArrivalTime == (*Q).Front->info.ArrivalTime){
+				//jika prioritas front kurang dari prioritas node baru
 				if ((*Q).Front->info.Priority < P->info.Priority){
 					P->next = (*Q).Front;
 					(*Q).Front = P;
 				}
+				//Jika prioritas front lebih dari atau sama dengan prioritas node baru
 				else if ((*Q).Front->info.Priority >= P->info.Priority){
+					//pointer menunjuk front
 					travel = (*Q).Front;
+					//pointer berjalan ke node selanjutnya jika prioritas node baru kurang
+					//dari atau sama dengan prioritas node yang ditunjuk travel, dan node travel
+					//selanjutnya tidak NULL
 					while (P->info.Priority <= travel->info.Priority && travel->next!=NULL){
 						before = travel;
 						travel = travel->next;
 					}
+					//Kondisi kondisi ketika travel berhenti bergerak (endwhile)
 					if (P->info.Priority > travel->info.Priority && travel->next==NULL){
 						before->next=P;
 						P->next=travel;
@@ -133,12 +149,15 @@ void enQueue(Queue *Q, infotype data){
 					}
 				}
 			}
+			//Jika waktu kedatangan node baru tidak sama dengan waktu kedatangan front
 			else if(P->info.ArrivalTime != (*Q).Front->info.ArrivalTime){
 				travel = (*Q).Front;
+				//Travel berjalan seperti pada line 133
 				while (travel->info.ArrivalTime == (*Q).Front->info.ArrivalTime && travel->next!=NULL){
 					before = travel;
 					travel = travel->next; 
 				}
+				//Kondisi kondisi ketika travel berhenti bergerak (endwhile)
 				if (travel->info.ArrivalTime != (*Q).Front->info.ArrivalTime && travel->next==NULL){
 					if (travel->info.Priority < P->info.Priority){
 						before->next = P;
@@ -159,10 +178,12 @@ void enQueue(Queue *Q, infotype data){
 						P->next = travel;
 					}
 					else {
+						//travel berjalan pada node yang waktu kedatangannya tidak sama dengan front
 						while (travel->info.Priority >= P->info.Priority && travel->next!=NULL){
 							before = travel;
 							travel = travel->next;
 						}
+						//kondisi ketika travel bergerak dan berhenti di tengah queue (bukan rear)
 						if (travel->next!=NULL){
 							after = travel->next;
 							if (travel->info.Priority <= P->info.Priority){
@@ -170,6 +191,8 @@ void enQueue(Queue *Q, infotype data){
 								P->next=travel;
 							}
 							else {
+								//travel akan berjalan lagi hingga urutan belakang pada prioritas yang sama
+								// dengan node baru
 								while (travel->info.Priority <= after->info.Priority){
 									if (travel->info.Priority > after->info.Priority){
 										P->next=after;
@@ -181,6 +204,7 @@ void enQueue(Queue *Q, infotype data){
 							}
 						
 						}
+						//kondisi ketika travel sudah bergerak higga rear dan berhenti di rear
 						else if (travel->next==NULL){
 							if(travel->info.Priority < P->info.Priority){
 								before->next=P;
@@ -198,7 +222,6 @@ void enQueue(Queue *Q, infotype data){
 		}
 	}
 }
-
 /* Proses: Mengambil info pada Front(Q) dan mengeluarkannya dari
 Queue dengan aturan FIFO */
 /* I.S. Q mungkin kosong atau Q mungkin berisi antrian */
